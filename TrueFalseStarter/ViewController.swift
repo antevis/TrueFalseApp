@@ -25,12 +25,12 @@ class ViewController: UIViewController {
         ["Question": "Camels are cannibalistic", "Answer": "False"],
         ["Question": "All ducks are birds", "Answer": "True"]
     ]
-    
+	
     @IBOutlet weak var questionField: UILabel!
     @IBOutlet weak var trueButton: UIButton!
     @IBOutlet weak var falseButton: UIButton!
     @IBOutlet weak var playAgainButton: UIButton!
-    
+	
     override func viewDidLoad() {
         super.viewDidLoad()
         loadGameStartSound()
