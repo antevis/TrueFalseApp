@@ -31,7 +31,6 @@ class ViewController: UIViewController {
     @IBOutlet weak var falseButton: UIButton!
     @IBOutlet weak var playAgainButton: UIButton!
     
-
     override func viewDidLoad() {
         super.viewDidLoad()
         loadGameStartSound()
