@@ -8,12 +8,43 @@
 
 import GameKit
 
-//Have to declare both question and options as classes in order to be able to use it as a parameter in
+//Both question and options as classes in order to be able to use it as a parameter in
 //func arrayByShufflingObjectsInArray(_ array: [AnyObject]) -> [AnyObject], as structs aren't covertible to AnyObject
 class Question {
 	
 	let question: String
 	var options: [Option]?
+	
+	//There may be more than one correct option
+	var correctOptionIndices: [Int]? {
+		
+		var indices: [Int]?
+		
+		guard let options = self.options else {
+			
+			return nil
+		}
+		
+		for i in 0..<options.count {
+			
+			guard let correct = options[i].correct else {
+				
+				continue
+			}
+			
+			if correct {
+				
+				if indices == nil {
+					
+					indices = []
+				}
+				
+				indices?.append(i)
+			}
+		}
+		
+		return indices
+	}
 	
 	init(question: String, options: [Option]?){
 		
