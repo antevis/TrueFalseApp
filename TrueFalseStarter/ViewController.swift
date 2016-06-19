@@ -167,35 +167,36 @@ class ViewController: UIViewController {
 		let button = UIButton(frame: CGRect(x: x, y: y, width: w, height: h))
 		button.backgroundColor = .blueColor()
 		button.setTitle(text, forState: .Normal)
-		button.addTarget(self, action: #selector(buttonAction), forControlEvents: .TouchUpInside)
-		
-		//button.accessibilityIdentifier = id
+		button.addTarget(self, action: #selector(answersButtonAction), forControlEvents: .TouchUpInside)
 		
 		button.tag = tag
 		
 		view.addSubview(button)
 	}
 	
-	func buttonAction(sender: UIButton!) {
+	func answersButtonAction(sender: UIButton!) {
 		
-		guard let correctOptionInds = questionItem?.correctOptionIndices else {
+		guard let questionItem = questionItem else {
 			
-			print("There are no correct options being offered.")
+			print("Unable to determine question for evaluation")
 			
 			return
 		}
 		
-		for index in correctOptionInds {
+		if let correct = questionItem.isCorrectOption(sender.tag) {
 			
-			if index == sender.tag {
+			if correct {
 				
 				print("Correct")
 				
-				return
+			} else {
+				
+				print("Incorrect")
 			}
+		} else {
+			
+			print("Incorrect")
 		}
-		
-		print("Incorrect")
 	}
 }
 

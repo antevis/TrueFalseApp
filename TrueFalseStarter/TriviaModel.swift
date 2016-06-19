@@ -61,6 +61,34 @@ class Question {
 		
 		return randomOrderedOptions
 	}
+	
+	func isCorrectOption(optionIndex: Int) -> Bool? {
+		
+		guard let options = self.options else {
+			
+			return nil
+		}
+		
+		if let optionItem = try? getOptionOf(options, optionIndex: optionIndex) {
+			
+			guard let correct = optionItem.correct else {
+				
+				return false
+			}
+			
+			return correct
+
+		} else {
+
+			return nil
+		}
+	}
+	
+	func getOptionOf(options: [Option], optionIndex: Int) throws -> Option {
+		
+		return options[optionIndex]
+	}
+
 }
 
 class Option {
