@@ -10,5 +10,7 @@ import Foundation
 
 class Game {
 	
+	let triviaModel = TriviaModel()
 	
+	var currentQuestionIndex: Int = 0
 }

@@ -110,7 +110,7 @@ struct TriviaModel {
 		Question(question: "This was the only US President to serve more than two consecutive terms.", options: [
 			Option(text: "George Washington", correct: nil),
 			Option(text: "Franklin D. Roosevelt", correct: true),
-			Option(text: "Woodrow Wilson", correct: nil),
+//			Option(text: "Woodrow Wilson", correct: nil),
 			Option(text: "Andrew Jackson", correct: nil)]),
 		
 		Question(question: "Which of the following countries has the most residents?", options: [
@@ -127,7 +127,7 @@ struct TriviaModel {
 		
 		Question(question: "The Titanic departed from the United Kingdom, where was it supposed to arrive?", options: [
 			Option(text: "Paris", correct: nil),
-			Option(text: "Washington D.C.", correct: nil),
+//			Option(text: "Washington D.C.", correct: nil),
 			Option(text: "New York", correct: true),
 			Option(text: "Boston", correct: nil)]),
 		
@@ -138,28 +138,28 @@ struct TriviaModel {
 			Option(text: "Canada", correct: true)]),
 		
 		Question(question: "Which country has most recently won consecutive World Cups in Soccer?", options: [
-			Option(text: "Italy", correct: nil),
+//			Option(text: "Italy", correct: nil),
 			Option(text: "Brazil", correct: true),
 			Option(text: "Argentina", correct: nil),
 			Option(text: "Spain", correct: nil)]),
 		
-		Question(question: "Which of the following rivers is longest?", options: [
-			Option(text: "Yangtze", correct: nil),
-			Option(text: "Mississippi", correct: true),
-			Option(text: "Congo", correct: nil),
-			Option(text: "Mekong", correct: nil)]),
-		
-		Question(question: "Which city is the oldest?", options: [
-			Option(text: "Mexico City", correct: true),
-			Option(text: "Cape Town", correct: nil),
-			Option(text: "San Juan", correct: nil),
-			Option(text: "Sydney", correct: nil)]),
-		
-		Question(question: "Which country was the first to allow women to vote in national elections?", options: [
-			Option(text: "Poland", correct: true),
-			Option(text: "United States", correct: nil),
-			Option(text: "Sweden", correct: nil),
-			Option(text: "Senegal", correct: nil)]),
+//		Question(question: "Which of the following rivers is longest?", options: [
+//			Option(text: "Yangtze", correct: nil),
+//			Option(text: "Mississippi", correct: true),
+//			Option(text: "Congo", correct: nil),
+//			Option(text: "Mekong", correct: nil)]),
+//		
+//		Question(question: "Which city is the oldest?", options: [
+//			Option(text: "Mexico City", correct: true),
+//			Option(text: "Cape Town", correct: nil),
+//			Option(text: "San Juan", correct: nil),
+//			Option(text: "Sydney", correct: nil)]),
+//		
+//		Question(question: "Which country was the first to allow women to vote in national elections?", options: [
+//			Option(text: "Poland", correct: true),
+//			Option(text: "United States", correct: nil),
+//			Option(text: "Sweden", correct: nil),
+//			Option(text: "Senegal", correct: nil)]),
 		
 		Question(question: "Which of these countries won the most medals in the 2012 Summer Games?", options: [
 			Option(text: "France", correct: nil),
