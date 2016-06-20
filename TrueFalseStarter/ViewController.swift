@@ -10,12 +10,41 @@ import UIKit
 import GameKit
 import AudioToolbox
 
+//Entirely borrowed this elegant enum by Pasan
+enum ColorComponents {
+	case RGB(red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat)
+	case HSB(hue: CGFloat, saturation: CGFloat, brightness: CGFloat, alpha: CGFloat)
+	
+	func color() -> UIColor {
+		switch  self {
+		case .RGB(let redVale, let greenValue, let blueValue, let alphaValue):
+			return UIColor(red: redVale/255.0, green: greenValue/255.0, blue: blueValue/255.0, alpha: alphaValue)
+		case .HSB(let hueValue, let saturationValue, let brightnessValue, let alphaValue):
+			return UIColor(hue: hueValue/360.0, saturation: saturationValue/100.0, brightness: brightnessValue/100.0, alpha: alphaValue)
+			
+		}
+	}
+}
+
 class ViewController: UIViewController {
     
     let questionsPerRound = 4
     //var questionsAsked = 0
-    var correctQuestions = 0
-    var indexOfSelectedQuestion: Int?
+	var correctAnswers: Int?// = 0
+	
+	var indexOfSelectedQuestion: Int? {
+		
+		didSet {
+			
+//			if let questions = questions {
+//				
+//				if indexOfSelectedQuestion >= questions.count {
+//					
+//					displayGameOver(questions.count)
+//				}
+//			}
+		}
+	}
 	
 	var questions: [Question]?
 	var questionItem: Question?
@@ -33,13 +62,17 @@ class ViewController: UIViewController {
 	let triviaModel = TriviaModel()
 	
     @IBOutlet weak var questionField: UILabel!
-    @IBOutlet weak var trueButton: UIButton!
-    @IBOutlet weak var falseButton: UIButton!
-    @IBOutlet weak var playAgainButton: UIButton!
+//    @IBOutlet weak var trueButton: UIButton!
+//    @IBOutlet weak var falseButton: UIButton!
+
 	@IBOutlet weak var buttonContainer: UIView!
+	@IBOutlet weak var infoLabel: UILabel!
+	@IBOutlet weak var funcButton: UIButton!
 	
     override func viewDidLoad() {
         super.viewDidLoad()
+		
+		//infoLabel.text = ""
         //loadGameStartSound()
         // Start game
         //playGameStartSound()
@@ -59,26 +92,26 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    func displayQuestion() {
+	func displayQuestion(questionIndex: Int) {
 		
-//        indexOfSelectedQuestion = GKRandomSource.sharedRandom().nextIntWithUpperBound(trivia.count)
-//        let questionDictionary =  /*triviaModel.shuffledQuestions()*/ trivia[indexOfSelectedQuestion]
-//        questionField.text = /*questionDictionary![0].question */questionDictionary["Question"]
+		removeButtonsFrom(buttonContainer)
 		
-		if let questions = questions, indexOfSelectedQuestion = indexOfSelectedQuestion {
+		if let questions = questions {
 			
-			if indexOfSelectedQuestion < questions.count {
+			if questionIndex < questions.count {
 			
-				questionItem = questions[indexOfSelectedQuestion]
+				questionItem = questions[questionIndex]
 				
 				if let questionItem = questionItem {
 					
 					questionField.text = questionItem.question
 					
+					processLabel(infoLabel, text: "Please select:", textColor: ColorComponents.RGB(red: 18, green: 101, blue: 132, alpha: 1))
+					
 					if let options = questionItem.options {
 						
-						let x = 8
-						var y = 8
+						let x = 20
+						var y = 10
 						
 						let buttonHeight = 50//Int((buttonContainer.frame.height - 16 - CGFloat((8 * (options.count - 1)))) / CGFloat(options.count))
 						
@@ -86,32 +119,46 @@ class ViewController: UIViewController {
 						
 						for i in 0..<options.count {
 							
-							addButton(options[i].optionText, tag: i, x: x, y: y, w: buttonWidth, h: buttonHeight, view: buttonContainer)
+							addButton(options[i].optionText, tag: i, x: x, y: y, w: buttonWidth, h: buttonHeight, view: buttonContainer, color: ColorComponents.RGB(red: 18, green: 101, blue: 132, alpha: 1))
 							
-							y += (buttonHeight + 8)
+							y += (buttonHeight + 10)
 						}
 					}
 				}
-			} else {
-				
-				print("Game over")
-				
-				playAgainButton.hidden = false
 			}
 		}
+	}
+	
+	func displayGameOver(questionsCount: Int) {
 		
-        //playAgainButton.hidden = true
-    }
-    
+		print("Game over")
+		
+		var messageText = ""
+		
+		if let correctAnswers = correctAnswers {
+			
+			messageText = "Way to go!\nYou got \(correctAnswers) out of \(questionsCount) correct!"
+			
+			
+		} else {
+			
+			messageText = "Well, it's embarrassing, but the number of correct answers couldn't be retreived."
+		}
+		
+		questionField.text = messageText
+		
+		funcButton.setTitle("Play Again", forState: .Normal)
+	}
+	
     func displayScore() {
         // Hide the answer buttons
-        trueButton.hidden = true
-        falseButton.hidden = true
+//        trueButton.hidden = true
+//        falseButton.hidden = true
 		
         // Display play again button
-        playAgainButton.hidden = false
+        //playAgainButton.hidden = false
         
-        questionField.text = "Way to go!\nYou got \(correctQuestions) out of \(questionsPerRound) correct!"
+        questionField.text = "Way to go!\nYou got \(correctAnswers) out of \(questionsPerRound) correct!"
         
     }
     
@@ -143,24 +190,67 @@ class ViewController: UIViewController {
 //        } else {
             // Continue game
 		
-		playAgainButton.hidden = true
+		//playAgainButton.hidden = true
 		questions = triviaModel.shuffledQuestions()
 		indexOfSelectedQuestion = 0
+		correctAnswers = 0
 		
-		displayQuestion()
+		if let questionIndex = indexOfSelectedQuestion {
+		
+			displayQuestion(questionIndex)
+			
+		}
+		
+		//infoLabel.text = ""
+		
+		funcButton.setTitle("Next Question", forState: .Normal)//.titleLabel?.text = "Next Question"
 //        }
     }
     
-    @IBAction func playAgain() {
-        // Show the answer buttons
-//        trueButton.hidden = false
-//        falseButton.hidden = false
+//    @IBAction func playAgain() {
+//        // Show the answer buttons
+////        trueButton.hidden = false
+////        falseButton.hidden = false
+//		
+//        //questionsAsked = 0
+//		
+//        nextRound()
+//    }
+	
+	@IBAction func processFuncButtonAction() {
 		
-        //questionsAsked = 0
-        correctQuestions = 0
-        nextRound()
-    }
-    
+		indexOfSelectedQuestion? += 1
+		
+//		if let questions = questions {
+//			
+//			if indexOfSelectedQuestion >= questions.count {
+//				
+//				displayGameOver(questions.count)
+//			}
+//		}
+		
+		if let questions = questions, questionIndex = indexOfSelectedQuestion {
+			
+			//Next question
+			if questionIndex < questions.count {
+				
+				//infoLabel.text = ""
+				
+				//removeButtonsFrom(buttonContainer)
+				
+				displayQuestion(questionIndex)
+				
+			} else if questionIndex == questions.count {
+				
+				displayGameOver(questions.count)
+				
+			} else {
+			
+				//Play again
+				nextRound()
+			}
+		}
+	}
 
     
     // MARK: Helper Methods
@@ -187,10 +277,10 @@ class ViewController: UIViewController {
         AudioServicesPlaySystemSound(gameSound)
     }
 	
-	func addButton(text: String, tag: Int, x: Int, y: Int, w: Int, h: Int, view: UIView) {
+	func addButton(text: String, tag: Int, x: Int, y: Int, w: Int, h: Int, view: UIView, color: ColorComponents) {
 		
 		let button = UIButton(frame: CGRect(x: x, y: y, width: w, height: h))
-		button.backgroundColor = .blueColor()
+		button.backgroundColor = color.color()
 		button.setTitle(text, forState: .Normal)
 		button.addTarget(self, action: #selector(answersButtonAction), forControlEvents: .TouchUpInside)
 		
@@ -210,35 +300,61 @@ class ViewController: UIViewController {
 		}
 	}
 	
+	func repaintButtonsExcept(pickedTag: Int) {
+		
+		for subView in buttonContainer.subviews {
+			
+			if let button = subView as? UIButton {
+			
+				button.backgroundColor = ColorComponents.RGB(red: 11, green: 47, blue: 66, alpha: 1).color()
+				
+				if button.tag != pickedTag {
+					
+					button.setTitleColor(ColorComponents.RGB(red: 55, green: 77, blue: 90, alpha: 1).color(), forState: .Normal)
+					
+				} else {
+
+					button.setTitleColor(.whiteColor(), forState: .Normal)
+				}
+				
+				button.enabled = false
+			}
+		}
+	}
+	
+	func processLabel(label: UILabel, text: String, textColor: ColorComponents) {
+		
+		label.text = text
+		label.textColor = textColor.color()
+	}
+	
 	func answersButtonAction(sender: UIButton!) {
 		
-		guard let questionItem = questionItem else {
+		if let questionItem = questionItem  {
 			
-			print("Unable to determine question for evaluation")
-			
-			return
-		}
-		
-		if let correct = questionItem.isCorrectOption(sender.tag) {
-			
-			if correct {
+			if let correct = questionItem.isCorrectOption(sender.tag) {
 				
-				print("Correct")
+				if correct {
+					
+					processLabel(infoLabel, text: "Correct!", textColor: ColorComponents.RGB(red: 90, green: 187, blue: 181, alpha: 1))
+					
+					correctAnswers? += 1
+					
+				} else {
+					
+					processLabel(infoLabel, text: "Sorry, that's not it.", textColor: ColorComponents.RGB(red: 254, green: 147, blue: 81, alpha: 1))
+				}
 				
 			} else {
 				
-				print("Incorrect")
+				processLabel(infoLabel, text: "Unable to evaluate your answer. o_O", textColor: ColorComponents.RGB(red: 254, green: 147, blue: 81, alpha: 1))
 			}
 		} else {
 			
-			print("Incorrect")
+			processLabel(infoLabel, text: "Unable to determine the question you've answered. o_O", textColor: ColorComponents.RGB(red: 254, green: 147, blue: 81, alpha: 1))
 		}
 		
-		indexOfSelectedQuestion? += 1
-		
-		removeButtonsFrom(buttonContainer)
-		
-		displayQuestion()
+		repaintButtonsExcept(sender.tag)
 	}
 }
 

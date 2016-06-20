@@ -113,17 +113,17 @@ struct TriviaModel {
 //			Option(text: "Woodrow Wilson", correct: nil),
 			Option(text: "Andrew Jackson", correct: nil)]),
 		
-		Question(question: "Which of the following countries has the most residents?", options: [
-			Option(text: "Nigeria", correct: true),
-			Option(text: "Russia", correct: nil),
-			Option(text: "Iran", correct: nil),
-			Option(text: "Vietnam", correct: nil)]),
-		
-		Question(question: "In what year was the United Nations founded?", options: [
-			Option(text: "1918", correct: nil),
-			Option(text: "1919", correct: nil),
-			Option(text: "1945", correct: true),
-			Option(text: "1954", correct: nil)]),
+//		Question(question: "Which of the following countries has the most residents?", options: [
+//			Option(text: "Nigeria", correct: true),
+//			Option(text: "Russia", correct: nil),
+//			Option(text: "Iran", correct: nil),
+//			Option(text: "Vietnam", correct: nil)]),
+//		
+//		Question(question: "In what year was the United Nations founded?", options: [
+//			Option(text: "1918", correct: nil),
+//			Option(text: "1919", correct: nil),
+//			Option(text: "1945", correct: true),
+//			Option(text: "1954", correct: nil)]),
 		
 		Question(question: "The Titanic departed from the United Kingdom, where was it supposed to arrive?", options: [
 			Option(text: "Paris", correct: nil),
