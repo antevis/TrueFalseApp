@@ -9,6 +9,11 @@
 /* Begin PBXBuildFile section */
 		2C0817D71D1518460041F64B /* Game.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C0817D61D1518460041F64B /* Game.swift */; };
 		2C1E971F1D12A13600219531 /* TriviaModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C1E971E1D12A13600219531 /* TriviaModel.swift */; };
+		2C701E451D194FC000E6453A /* CorrectSound.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2C701E421D194FC000E6453A /* CorrectSound.wav */; };
+		2C701E461D194FC000E6453A /* GameOverSound.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2C701E431D194FC000E6453A /* GameOverSound.wav */; };
+		2C701E471D194FC000E6453A /* WrongSound.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2C701E441D194FC000E6453A /* WrongSound.wav */; };
+		2C701E491D19540A00E6453A /* ErrorSound.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2C701E481D19540A00E6453A /* ErrorSound.wav */; };
+		2C701E4B1D19599F00E6453A /* NextQ.wav in Resources */ = {isa = PBXBuildFile; fileRef = 2C701E4A1D19599F00E6453A /* NextQ.wav */; };
 		97093D3C1C913506001275BC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97093D3B1C913506001275BC /* AppDelegate.swift */; };
 		97093D3E1C913506001275BC /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97093D3D1C913506001275BC /* ViewController.swift */; };
 		97093D411C913506001275BC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97093D3F1C913506001275BC /* Main.storyboard */; };
@@ -20,6 +25,11 @@
 /* Begin PBXFileReference section */
 		2C0817D61D1518460041F64B /* Game.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Game.swift; sourceTree = "<group>"; };
 		2C1E971E1D12A13600219531 /* TriviaModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TriviaModel.swift; sourceTree = "<group>"; };
+		2C701E421D194FC000E6453A /* CorrectSound.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = CorrectSound.wav; sourceTree = "<group>"; };
+		2C701E431D194FC000E6453A /* GameOverSound.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = GameOverSound.wav; sourceTree = "<group>"; };
+		2C701E441D194FC000E6453A /* WrongSound.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = WrongSound.wav; sourceTree = "<group>"; };
+		2C701E481D19540A00E6453A /* ErrorSound.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = ErrorSound.wav; sourceTree = "<group>"; };
+		2C701E4A1D19599F00E6453A /* NextQ.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = NextQ.wav; sourceTree = "<group>"; };
 		97093D381C913506001275BC /* TrueFalseStarter.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TrueFalseStarter.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		97093D3B1C913506001275BC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		97093D3D1C913506001275BC /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -60,6 +70,11 @@
 		97093D3A1C913506001275BC /* TrueFalseStarter */ = {
 			isa = PBXGroup;
 			children = (
+				2C701E4A1D19599F00E6453A /* NextQ.wav */,
+				2C701E481D19540A00E6453A /* ErrorSound.wav */,
+				2C701E421D194FC000E6453A /* CorrectSound.wav */,
+				2C701E431D194FC000E6453A /* GameOverSound.wav */,
+				2C701E441D194FC000E6453A /* WrongSound.wav */,
 				97093D3B1C913506001275BC /* AppDelegate.swift */,
 				97093D3D1C913506001275BC /* ViewController.swift */,
 				2C1E971E1D12A13600219531 /* TriviaModel.swift */,
@@ -133,7 +148,12 @@
 			files = (
 				97093D531C932116001275BC /* GameSound.wav in Resources */,
 				97093D461C913506001275BC /* LaunchScreen.storyboard in Resources */,
+				2C701E471D194FC000E6453A /* WrongSound.wav in Resources */,
+				2C701E461D194FC000E6453A /* GameOverSound.wav in Resources */,
 				97093D431C913506001275BC /* Assets.xcassets in Resources */,
+				2C701E491D19540A00E6453A /* ErrorSound.wav in Resources */,
+				2C701E451D194FC000E6453A /* CorrectSound.wav in Resources */,
+				2C701E4B1D19599F00E6453A /* NextQ.wav in Resources */,
 				97093D411C913506001275BC /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

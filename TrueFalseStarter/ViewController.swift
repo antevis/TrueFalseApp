@@ -29,7 +29,7 @@ enum ColorComponents {
 class ViewController: UIViewController {
     
     let questionsPerRound = 4
-    //var questionsAsked = 0
+
 	var correctAnswers: Int?// = 0
 	
 	var indexOfSelectedQuestion: Int?
@@ -38,20 +38,14 @@ class ViewController: UIViewController {
 	var questionItem: Question?
     
     var gameSound: SystemSoundID = 0
-    
-//    let trivia: [[String : String]] = [
-//        ["Question": "Only female koalas can whistle", "Answer": "False"],
-//        ["Question": "Blue whales are technically whales", "Answer": "True"],
-//        ["Question": "Camels are cannibalistic", "Answer": "False"],
-//        ["Question": "All ducks are birds", "Answer": "True"]
-//    ]
+	
+	var autoGame: Bool = false
 	
 
 	let triviaModel = TriviaModel()
 	
     @IBOutlet weak var questionField: UILabel!
-//    @IBOutlet weak var trueButton: UIButton!
-//    @IBOutlet weak var falseButton: UIButton!
+
 
 	@IBOutlet weak var infoLabel: UILabel!
 	@IBOutlet weak var funcButton: UIButton!
@@ -60,32 +54,10 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 		
-		//infoLabel.text = ""
-        //loadGameStartSound()
-        // Start game
-        //playGameStartSound()
-		
-//		questions = triviaModel.shuffledQuestions()
-//		indexOfSelectedQuestion = 0
-//		
-//        displayQuestion()
-		
-		setupButtonStack()
+		infoLabel.text = ""
 		
 		nextRound()
-		
-		
     }
-	
-	func setupButtonStack() {
-		
-//		buttonStack.axis = .Vertical
-//		buttonStack.distribution = .EqualSpacing
-//		buttonStack.alignment = .Leading
-//		//buttonsContainer.spacing = 8
-//		buttonStack.layoutMargins = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-//		buttonStack.layoutMarginsRelativeArrangement = true
-	}
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -94,7 +66,6 @@ class ViewController: UIViewController {
     
 	func displayQuestion(questionIndex: Int) {
 		
-		//removeButtonsFrom(buttonContainer)
 		removeButtonsFrom(buttonStack)
 		
 		if let questions = questions {
@@ -113,7 +84,7 @@ class ViewController: UIViewController {
 						
 						for i in 0..<options.count {
 							
-							addButtonStack(buttonStack, text: options[i].optionText, tag: i, color: ColorComponents.RGB(red: 18, green: 101, blue: 132, alpha: 1))
+							addButtonToStack(buttonStack, text: options[i].optionText, tag: i, color: ColorComponents.RGB(red: 18, green: 101, blue: 132, alpha: 1))
 						}
 					}
 				}
@@ -129,10 +100,16 @@ class ViewController: UIViewController {
 		
 		if let correctAnswers = correctAnswers {
 			
+			loadGameOverSound()
+			playSound()
+			
 			messageText = "Way to go!\nYou got \(correctAnswers) out of \(questionsCount) correct!"
 			
 			
 		} else {
+			
+			loadErrorSound()
+			playSound()
 			
 			messageText = "Well, it's embarrassing, but the number of correct answers couldn't be retreived."
 		}
@@ -142,48 +119,14 @@ class ViewController: UIViewController {
 		funcButton.setTitle("Play Again", forState: .Normal)
 	}
 	
-    func displayScore() {
-        // Hide the answer buttons
-//        trueButton.hidden = true
-//        falseButton.hidden = true
-		
-        // Display play again button
-        //playAgainButton.hidden = false
-        
-        questionField.text = "Way to go!\nYou got \(correctAnswers) out of \(questionsPerRound) correct!"
-        
-    }
-    
-    @IBAction func checkAnswer(sender: UIButton) {
-		
-		//removeButtonsFrom(buttonContainer)
-		
-//        // Increment the questions asked counter
-//        questionsAsked += 1
-//        
-//        let selectedQuestionDict = trivia[indexOfSelectedQuestion]
-//        let correctAnswer = selectedQuestionDict["Answer"]
-//        
-//        if (sender === trueButton &&  correctAnswer == "True") || (sender === falseButton && correctAnswer == "False") {
-//            correctQuestions += 1
-//            questionField.text = "Correct!"
-//        } else {
-//            questionField.text = "Sorry, wrong answer!"
-//        }
-//		
-//        loadNextRoundWithDelay(seconds: 2)
-    }
-    
+	
     func nextRound() {
 		
-//        if questionsAsked == questionsPerRound {
-//            // Game is over
-//            displayScore()
-//        } else {
-            // Continue game
+		loadGameStartSound()
+		playSound()
 		
-		//playAgainButton.hidden = true
 		questions = triviaModel.shuffledQuestions()
+		
 		indexOfSelectedQuestion = 0
 		correctAnswers = 0
 		
@@ -193,42 +136,23 @@ class ViewController: UIViewController {
 			
 		}
 		
-		//infoLabel.text = ""
-		
-		funcButton.setTitle("Next Question", forState: .Normal)//.titleLabel?.text = "Next Question"
-//        }
+		funcButton.setTitle("Next Question", forState: .Normal)
     }
     
-//    @IBAction func playAgain() {
-//        // Show the answer buttons
-////        trueButton.hidden = false
-////        falseButton.hidden = false
-//		
-//        //questionsAsked = 0
-//		
-//        nextRound()
-//    }
 	
 	@IBAction func processFuncButtonAction() {
 		
-		indexOfSelectedQuestion? += 1
+		self.autoGame = false
 		
-//		if let questions = questions {
-//			
-//			if indexOfSelectedQuestion >= questions.count {
-//				
-//				displayGameOver(questions.count)
-//			}
-//		}
+		loadNextQuestionSound()
+		playSound()
+		
+		indexOfSelectedQuestion? += 1
 		
 		if let questions = questions, questionIndex = indexOfSelectedQuestion {
 			
 			//Next question
 			if questionIndex < questions.count {
-				
-				//infoLabel.text = ""
-				
-				//removeButtonsFrom(buttonContainer)
 				
 				displayQuestion(questionIndex)
 				
@@ -248,6 +172,9 @@ class ViewController: UIViewController {
     // MARK: Helper Methods
     
     func loadNextRoundWithDelay(seconds seconds: Int) {
+		
+		self.autoGame = true
+		
         // Converts a delay in seconds to nanoseconds as signed 64 bit integer
         let delay = Int64(NSEC_PER_SEC * UInt64(seconds))
         // Calculates a time value to execute the method given current time and delay
@@ -255,21 +182,57 @@ class ViewController: UIViewController {
         
         // Executes the nextRound method at the dispatch time on the main queue
         dispatch_after(dispatchTime, dispatch_get_main_queue()) {
-            self.nextRound()
+            //self.nextRound()
+			
+			if self.autoGame {
+				self.processFuncButtonAction()
+			}
         }
     }
+	
+	func soundUrlFor(file fileName: String, ofType: String) -> NSURL {
+		
+		let pathToSoundFile = NSBundle.mainBundle().pathForResource(fileName, ofType: ofType)
+		return NSURL(fileURLWithPath: pathToSoundFile!)
+	}
     
     func loadGameStartSound() {
-        let pathToSoundFile = NSBundle.mainBundle().pathForResource("GameSound", ofType: "wav")
-        let soundURL = NSURL(fileURLWithPath: pathToSoundFile!)
-        AudioServicesCreateSystemSoundID(soundURL, &gameSound)
-    }
-    
-    func playGameStartSound() {
-        AudioServicesPlaySystemSound(gameSound)
+		
+		AudioServicesCreateSystemSoundID(soundUrlFor(file: "GameSound", ofType: "wav"), &gameSound)
     }
 	
-	func addButtonStack(view: UIStackView, text: String, tag: Int, color: ColorComponents) {
+	func loadCorrectSound() {
+		
+		AudioServicesCreateSystemSoundID(soundUrlFor(file: "CorrectSound", ofType: "wav"), &gameSound)
+	}
+	
+	func loadWrongSound() {
+		
+		AudioServicesCreateSystemSoundID(soundUrlFor(file: "WrongSound", ofType: "wav"), &gameSound)
+	}
+	
+	func loadGameOverSound() {
+		
+		AudioServicesCreateSystemSoundID(soundUrlFor(file: "GameOverSound", ofType: "wav"), &gameSound)
+	}
+	
+	func loadErrorSound() {
+		
+		AudioServicesCreateSystemSoundID(soundUrlFor(file: "ErrorSound", ofType: "wav"), &gameSound)
+	}
+	
+	func loadNextQuestionSound() {
+		
+		AudioServicesCreateSystemSoundID(soundUrlFor(file: "NextQ", ofType: "wav"), &gameSound)
+	}
+	
+	func playSound(){
+		
+		AudioServicesPlaySystemSound(gameSound)
+	}
+	
+	
+	func addButtonToStack(view: UIStackView, text: String, tag: Int, color: ColorComponents) {
 		
 		let button = UIButton()
 		button.backgroundColor = color.color()
@@ -281,22 +244,7 @@ class ViewController: UIViewController {
 		view.addArrangedSubview(button)
 	}
 	
-//	func addButton(text: String, tag: Int, buttonStack: UIStackView, color: ColorComponents) {
-//		
-//		let button = UIButton(frame: CGRect(x: 0, y: 0, width: 250, height: 30))
-//		
-//		button.backgroundColor = color.color()
-//		button.setTitle(text, forState: .Normal)
-//		button.addTarget(self, action: #selector(answersButtonAction), forControlEvents: .TouchUpInside)
-//		
-//		button.tag = tag
-//		
-//		button.translatesAutoresizingMaskIntoConstraints = false
-//		
-//		
-//		buttonStack.addSubview(button)
-//	}
-	
+
 	func  removeButtonsFrom(superView: UIView) {
 		
 		for subView in superView.subviews {
@@ -344,25 +292,40 @@ class ViewController: UIViewController {
 				
 				if correct {
 					
+					loadCorrectSound()
+					playSound()
+					
 					processLabel(infoLabel, text: "Correct!", textColor: ColorComponents.RGB(red: 90, green: 187, blue: 181, alpha: 1))
 					
 					correctAnswers? += 1
 					
 				} else {
 					
+					loadWrongSound()
+					playSound()
+					
 					processLabel(infoLabel, text: "Sorry, that's not it.", textColor: ColorComponents.RGB(red: 254, green: 147, blue: 81, alpha: 1))
 				}
 				
 			} else {
 				
+				loadErrorSound()
+				playSound()
+				
 				processLabel(infoLabel, text: "Unable to evaluate your answer. o_O", textColor: ColorComponents.RGB(red: 254, green: 147, blue: 81, alpha: 1))
 			}
 		} else {
+			
+			loadErrorSound()
+			playSound()
 			
 			processLabel(infoLabel, text: "Unable to determine the question you've answered. o_O", textColor: ColorComponents.RGB(red: 254, green: 147, blue: 81, alpha: 1))
 		}
 		
 		repaintButtonsExcept(buttonStack, pickedTag: sender.tag)
+		
+		loadNextRoundWithDelay(seconds: 2)
 	}
+
 }
 
