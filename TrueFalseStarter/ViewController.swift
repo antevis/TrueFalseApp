@@ -32,19 +32,7 @@ class ViewController: UIViewController {
     //var questionsAsked = 0
 	var correctAnswers: Int?// = 0
 	
-	var indexOfSelectedQuestion: Int? {
-		
-		didSet {
-			
-//			if let questions = questions {
-//				
-//				if indexOfSelectedQuestion >= questions.count {
-//					
-//					displayGameOver(questions.count)
-//				}
-//			}
-		}
-	}
+	var indexOfSelectedQuestion: Int?
 	
 	var questions: [Question]?
 	var questionItem: Question?
@@ -65,9 +53,9 @@ class ViewController: UIViewController {
 //    @IBOutlet weak var trueButton: UIButton!
 //    @IBOutlet weak var falseButton: UIButton!
 
-	@IBOutlet weak var buttonContainer: UIView!
 	@IBOutlet weak var infoLabel: UILabel!
 	@IBOutlet weak var funcButton: UIButton!
+	@IBOutlet weak var buttonStack: UIStackView!
 	
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -82,10 +70,22 @@ class ViewController: UIViewController {
 //		
 //        displayQuestion()
 		
+		setupButtonStack()
+		
 		nextRound()
 		
 		
     }
+	
+	func setupButtonStack() {
+		
+//		buttonStack.axis = .Vertical
+//		buttonStack.distribution = .EqualSpacing
+//		buttonStack.alignment = .Leading
+//		//buttonsContainer.spacing = 8
+//		buttonStack.layoutMargins = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+//		buttonStack.layoutMarginsRelativeArrangement = true
+	}
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -94,7 +94,8 @@ class ViewController: UIViewController {
     
 	func displayQuestion(questionIndex: Int) {
 		
-		removeButtonsFrom(buttonContainer)
+		//removeButtonsFrom(buttonContainer)
+		removeButtonsFrom(buttonStack)
 		
 		if let questions = questions {
 			
@@ -106,22 +107,13 @@ class ViewController: UIViewController {
 					
 					questionField.text = questionItem.question
 					
-					processLabel(infoLabel, text: "Please select:", textColor: ColorComponents.RGB(red: 18, green: 101, blue: 132, alpha: 1))
+					processLabel(infoLabel, text: "", textColor: ColorComponents.RGB(red: 18, green: 101, blue: 132, alpha: 1))
 					
 					if let options = questionItem.options {
 						
-						let x = 20
-						var y = 10
-						
-						let buttonHeight = 50//Int((buttonContainer.frame.height - 16 - CGFloat((8 * (options.count - 1)))) / CGFloat(options.count))
-						
-						let buttonWidth = 250//buttonContainer.frame.width - 16
-						
 						for i in 0..<options.count {
 							
-							addButton(options[i].optionText, tag: i, x: x, y: y, w: buttonWidth, h: buttonHeight, view: buttonContainer, color: ColorComponents.RGB(red: 18, green: 101, blue: 132, alpha: 1))
-							
-							y += (buttonHeight + 10)
+							addButtonStack(buttonStack, text: options[i].optionText, tag: i, color: ColorComponents.RGB(red: 18, green: 101, blue: 132, alpha: 1))
 						}
 					}
 				}
@@ -277,21 +269,37 @@ class ViewController: UIViewController {
         AudioServicesPlaySystemSound(gameSound)
     }
 	
-	func addButton(text: String, tag: Int, x: Int, y: Int, w: Int, h: Int, view: UIView, color: ColorComponents) {
+	func addButtonStack(view: UIStackView, text: String, tag: Int, color: ColorComponents) {
 		
-		let button = UIButton(frame: CGRect(x: x, y: y, width: w, height: h))
+		let button = UIButton()
 		button.backgroundColor = color.color()
 		button.setTitle(text, forState: .Normal)
 		button.addTarget(self, action: #selector(answersButtonAction), forControlEvents: .TouchUpInside)
 		
 		button.tag = tag
 		
-		view.addSubview(button)
+		view.addArrangedSubview(button)
 	}
+	
+//	func addButton(text: String, tag: Int, buttonStack: UIStackView, color: ColorComponents) {
+//		
+//		let button = UIButton(frame: CGRect(x: 0, y: 0, width: 250, height: 30))
+//		
+//		button.backgroundColor = color.color()
+//		button.setTitle(text, forState: .Normal)
+//		button.addTarget(self, action: #selector(answersButtonAction), forControlEvents: .TouchUpInside)
+//		
+//		button.tag = tag
+//		
+//		button.translatesAutoresizingMaskIntoConstraints = false
+//		
+//		
+//		buttonStack.addSubview(button)
+//	}
 	
 	func  removeButtonsFrom(superView: UIView) {
 		
-		for subView in buttonContainer.subviews {
+		for subView in superView.subviews {
 			
 			if subView is UIButton {
 				
@@ -300,9 +308,9 @@ class ViewController: UIViewController {
 		}
 	}
 	
-	func repaintButtonsExcept(pickedTag: Int) {
+	func repaintButtonsExcept(superView: UIView, pickedTag: Int) {
 		
-		for subView in buttonContainer.subviews {
+		for subView in superView.subviews {
 			
 			if let button = subView as? UIButton {
 			
@@ -354,7 +362,7 @@ class ViewController: UIViewController {
 			processLabel(infoLabel, text: "Unable to determine the question you've answered. o_O", textColor: ColorComponents.RGB(red: 254, green: 147, blue: 81, alpha: 1))
 		}
 		
-		repaintButtonsExcept(sender.tag)
+		repaintButtonsExcept(buttonStack, pickedTag: sender.tag)
 	}
 }
 
