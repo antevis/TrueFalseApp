@@ -41,14 +41,21 @@ class ViewController: UIViewController {
 	
 	var autoGame: Bool = false
 	
-	var lightningMode: Bool = false
-	
 	let triviaModel = TriviaModel()
 	
     @IBOutlet weak var questionField: UILabel!
 	@IBOutlet weak var infoLabel: UILabel!
 	@IBOutlet weak var funcButton: UIButton!
 	@IBOutlet weak var buttonStack: UIStackView!
+	
+	let questionButtonColor = ColorComponents.RGB(red: 18, green: 101, blue: 132, alpha: 1)
+	let dimmedQButtonColor = ColorComponents.RGB(red: 11, green: 47, blue: 66, alpha: 1)
+	let dimmedQButtonTitleColor = ColorComponents.RGB(red: 55, green: 77, blue: 90, alpha: 1)
+	let lightningModeButtonColor = ColorComponents.RGB(red: 255, green: 128, blue: 0, alpha: 1)
+	let correctAnswerLabelColor = ColorComponents.RGB(red: 90, green: 187, blue: 181, alpha: 1)
+	let wrongAnswerLabelColor = ColorComponents.RGB(red: 254, green: 147, blue: 81, alpha: 1)
+	
+	
 	
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -81,7 +88,7 @@ class ViewController: UIViewController {
 					
 					for i in 0..<options.count {
 						
-						addAnswerOptionButtonTo(stack: buttonStack, text: options[i].optionText, tag: i, color: ColorComponents.RGB(red: 18, green: 101, blue: 132, alpha: 1))
+						addAnswerOptionButtonTo(stack: buttonStack, text: options[i].optionText, tag: i, color: questionButtonColor)
 					}
 				}
 			}
@@ -254,11 +261,11 @@ class ViewController: UIViewController {
 			
 			if let button = subView as? UIButton {
 			
-				button.backgroundColor = ColorComponents.RGB(red: 11, green: 47, blue: 66, alpha: 1).color()
+				button.backgroundColor = dimmedQButtonColor.color()
 				
 				if button.tag != pickedTag {
 					
-					button.setTitleColor(ColorComponents.RGB(red: 55, green: 77, blue: 90, alpha: 1).color(), forState: .Normal)
+					button.setTitleColor(dimmedQButtonTitleColor.color(), forState: .Normal)
 					
 				} else {
 
@@ -276,16 +283,6 @@ class ViewController: UIViewController {
 		label.textColor = textColor.color()
 	}
 	
-	func lightninModeButtonAction(sender: UIButton!) {
-		
-		switch sender.tag {
-		case 1:
-			lightningMode = true
-		default:
-			lightningMode = false
-		}
-	}
-	
 	func answersButtonAction(sender: UIButton!) {
 		
 		if let questionItem = questionItem  {
@@ -297,7 +294,7 @@ class ViewController: UIViewController {
 					loadCorrectSound()
 					playSound()
 					
-					processLabel(infoLabel, text: "Correct!", textColor: ColorComponents.RGB(red: 90, green: 187, blue: 181, alpha: 1))
+					processLabel(infoLabel, text: "Correct!", textColor: correctAnswerLabelColor)
 					
 					correctAnswers? += 1
 					
@@ -306,7 +303,7 @@ class ViewController: UIViewController {
 					loadWrongSound()
 					playSound()
 					
-					processLabel(infoLabel, text: "Sorry, that's not it.", textColor: ColorComponents.RGB(red: 254, green: 147, blue: 81, alpha: 1))
+					processLabel(infoLabel, text: "Sorry, that's not it.", textColor: wrongAnswerLabelColor)
 				}
 				
 			} else {
@@ -314,14 +311,14 @@ class ViewController: UIViewController {
 				loadErrorSound()
 				playSound()
 				
-				processLabel(infoLabel, text: "Unable to evaluate your answer. o_O", textColor: ColorComponents.RGB(red: 254, green: 147, blue: 81, alpha: 1))
+				processLabel(infoLabel, text: "Unable to evaluate your answer. o_O", textColor: wrongAnswerLabelColor)
 			}
 		} else {
 			
 			loadErrorSound()
 			playSound()
 			
-			processLabel(infoLabel, text: "Unable to determine the question you've answered. o_O", textColor: ColorComponents.RGB(red: 254, green: 147, blue: 81, alpha: 1))
+			processLabel(infoLabel, text: "Unable to determine the question you've answered. o_O", textColor: wrongAnswerLabelColor)
 		}
 		
 		repaintButtonsExcept(buttonStack, pickedTag: sender.tag)
