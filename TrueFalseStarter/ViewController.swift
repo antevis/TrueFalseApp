@@ -41,12 +41,11 @@ class ViewController: UIViewController {
 	
 	var autoGame: Bool = false
 	
-
+	var lightningMode: Bool = false
+	
 	let triviaModel = TriviaModel()
 	
     @IBOutlet weak var questionField: UILabel!
-
-
 	@IBOutlet weak var infoLabel: UILabel!
 	@IBOutlet weak var funcButton: UIButton!
 	@IBOutlet weak var buttonStack: UIStackView!
@@ -70,22 +69,19 @@ class ViewController: UIViewController {
 		
 		if let questions = questions {
 			
-			if questionIndex < questions.count {
+			questionItem = questions[questionIndex]
 			
-				questionItem = questions[questionIndex]
+			if let questionItem = questionItem {
 				
-				if let questionItem = questionItem {
+				questionField.text = questionItem.question
+				
+				processLabel(infoLabel, text: "", textColor: ColorComponents.RGB(red: 18, green: 101, blue: 132, alpha: 1))
+				
+				if let options = questionItem.options {
 					
-					questionField.text = questionItem.question
-					
-					processLabel(infoLabel, text: "", textColor: ColorComponents.RGB(red: 18, green: 101, blue: 132, alpha: 1))
-					
-					if let options = questionItem.options {
+					for i in 0..<options.count {
 						
-						for i in 0..<options.count {
-							
-							addButtonToStack(buttonStack, text: options[i].optionText, tag: i, color: ColorComponents.RGB(red: 18, green: 101, blue: 132, alpha: 1))
-						}
+						addAnswerOptionButtonTo(stack: buttonStack, text: options[i].optionText, tag: i, color: ColorComponents.RGB(red: 18, green: 101, blue: 132, alpha: 1))
 					}
 				}
 			}
@@ -130,11 +126,7 @@ class ViewController: UIViewController {
 		indexOfSelectedQuestion = 0
 		correctAnswers = 0
 		
-		if let questionIndex = indexOfSelectedQuestion {
-		
-			displayQuestion(questionIndex)
-			
-		}
+		displayQuestion(indexOfSelectedQuestion!)
 		
 		funcButton.setTitle("Next Question", forState: .Normal)
     }
@@ -232,7 +224,7 @@ class ViewController: UIViewController {
 	}
 	
 	
-	func addButtonToStack(view: UIStackView, text: String, tag: Int, color: ColorComponents) {
+	func addAnswerOptionButtonTo(stack stackView: UIStackView, text: String, tag: Int, color: ColorComponents) {
 		
 		let button = UIButton()
 		button.backgroundColor = color.color()
@@ -241,7 +233,7 @@ class ViewController: UIViewController {
 		
 		button.tag = tag
 		
-		view.addArrangedSubview(button)
+		stackView.addArrangedSubview(button)
 	}
 	
 
@@ -282,6 +274,16 @@ class ViewController: UIViewController {
 		
 		label.text = text
 		label.textColor = textColor.color()
+	}
+	
+	func lightninModeButtonAction(sender: UIButton!) {
+		
+		switch sender.tag {
+		case 1:
+			lightningMode = true
+		default:
+			lightningMode = false
+		}
 	}
 	
 	func answersButtonAction(sender: UIButton!) {
