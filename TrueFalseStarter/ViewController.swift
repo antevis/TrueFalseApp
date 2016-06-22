@@ -39,8 +39,6 @@ class ViewController: UIViewController {
     
     var gameSound: SystemSoundID = 0
 	
-	var autoGame: Bool = false
-	
 	let triviaModel = TriviaModel()
 	
     @IBOutlet weak var questionField: UILabel!
@@ -52,8 +50,10 @@ class ViewController: UIViewController {
 	let dimmedQButtonColor = ColorComponents.RGB(red: 11, green: 47, blue: 66, alpha: 1)
 	let dimmedQButtonTitleColor = ColorComponents.RGB(red: 55, green: 77, blue: 90, alpha: 1)
 	let lightningModeButtonColor = ColorComponents.RGB(red: 255, green: 128, blue: 0, alpha: 1)
-	let correctAnswerLabelColor = ColorComponents.RGB(red: 90, green: 187, blue: 181, alpha: 1)
+	let correctColor = ColorComponents.RGB(red: 90, green: 187, blue: 181, alpha: 1)
 	let wrongAnswerLabelColor = ColorComponents.RGB(red: 254, green: 147, blue: 81, alpha: 1)
+	let dimmedFuncButtonColor = ColorComponents.RGB(red: 10, green: 81, blue: 72, alpha: 1)
+	let dimmedFuncButtonTitleColor = ColorComponents.RGB(red: 170, green: 170, blue: 170, alpha: 1)
 	
 	
 	
@@ -74,6 +74,8 @@ class ViewController: UIViewController {
 		
 		removeButtonsFrom(buttonStack)
 		
+		processParamsFor(button: funcButton, color: dimmedFuncButtonColor, titleColor: dimmedFuncButtonTitleColor, enabled: false)
+		
 		if let questions = questions {
 			
 			questionItem = questions[questionIndex]
@@ -93,6 +95,13 @@ class ViewController: UIViewController {
 				}
 			}
 		}
+	}
+	
+	func processParamsFor(button button: UIButton, color: ColorComponents, titleColor: ColorComponents, enabled: Bool) {
+		
+		button.backgroundColor = color.color()
+		funcButton.setTitleColor(titleColor.color(), forState: .Normal)
+		funcButton.enabled = enabled
 	}
 	
 	func displayGameOver(questionsCount: Int) {
@@ -141,8 +150,6 @@ class ViewController: UIViewController {
 	
 	@IBAction func processFuncButtonAction() {
 		
-		self.autoGame = false
-		
 		loadNextQuestionSound()
 		playSound()
 		
@@ -172,8 +179,6 @@ class ViewController: UIViewController {
     
     func loadNextRoundWithDelay(seconds seconds: Int) {
 		
-		self.autoGame = true
-		
         // Converts a delay in seconds to nanoseconds as signed 64 bit integer
         let delay = Int64(NSEC_PER_SEC * UInt64(seconds))
         // Calculates a time value to execute the method given current time and delay
@@ -183,9 +188,9 @@ class ViewController: UIViewController {
         dispatch_after(dispatchTime, dispatch_get_main_queue()) {
             //self.nextRound()
 			
-			if self.autoGame {
-				self.processFuncButtonAction()
-			}
+			
+			self.processFuncButtonAction()
+			
         }
     }
 	
@@ -294,7 +299,7 @@ class ViewController: UIViewController {
 					loadCorrectSound()
 					playSound()
 					
-					processLabel(infoLabel, text: "Correct!", textColor: correctAnswerLabelColor)
+					processLabel(infoLabel, text: "Correct!", textColor: correctColor)
 					
 					correctAnswers? += 1
 					
@@ -323,8 +328,7 @@ class ViewController: UIViewController {
 		
 		repaintButtonsExcept(buttonStack, pickedTag: sender.tag)
 		
-		loadNextRoundWithDelay(seconds: 2)
+		processParamsFor(button: funcButton, color: correctColor, titleColor: .RGB(red: 255, green: 255, blue: 255, alpha: 1), enabled: true)
 	}
-
 }
 
