@@ -105,6 +105,13 @@ class Option {
 
 struct TriviaModel {
 	
+	internal enum TriviaType: Int {
+		
+		case textBased
+		case arithmetic
+		case mixed
+	}
+	
 	let questions: [Question] = [
 		
 		Question(question: "This was the only US President to serve more than two consecutive terms.", options: [
@@ -168,10 +175,176 @@ struct TriviaModel {
 			Option(text: "Great Britian", correct: true)])
 	]
 	
-	
-	func shuffledQuestions() -> [Question]? {
+	func generateMathQuestion() -> Question? {
 		
-		guard let randomOrderedQuestions = GKRandomSource.sharedRandom().arrayByShufflingObjectsInArray(questions) as? [Question] else {
+		let operations = ["+", "-", "*"]
+		
+		var operIndices = getOperationsIndexesTuple(lessThan: operations.count)
+		
+		//to ensure unique expression members
+		guard let expressionMembers = uniqueArrayOf(elementCount: 3, lessThan: 10) else {
+			
+			return nil
+		}
+		
+		let a = expressionMembers[0]
+		let b = expressionMembers[1]
+		let c = expressionMembers[2]
+		
+		var options: [Option] = []
+		
+		let correctOptionValue = self.getOptionResult(a, b: b, c: c, opOne: operIndices.one, opTwo: operIndices.two, operations: operations)
+		
+		let questionText = "(\(a) \(operations[operIndices.one]) \(b)) \(operations[operIndices.two]) \(c) ="
+		
+		let correctOption = Option(text: "\(correctOptionValue)", correct: true)
+		options.append(correctOption)
+		
+		var optionValues: [Int] = [correctOptionValue]
+		
+		for _ in 0..<3 {
+			
+			var optionValue: Int
+			
+			//to prevent infinite loop, which in fact should not happen, but still to be sure
+			var guardian = 0
+			
+			repeat {
+				
+				operIndices = getOperationsIndexesTuple(lessThan: operations.count)
+				
+				optionValue = self.getOptionResult(a, b: b, c: c, opOne: operIndices.one, opTwo: operIndices.two, operations: operations)
+				
+				guardian += 1
+				
+			} while optionValues.contains(optionValue) && guardian < 10
+			
+			optionValues.append(optionValue)
+			
+			let option = Option(text: "\(optionValue)", correct: nil)
+			options.append(option)
+		}
+		
+		
+		
+		let question = Question(question: questionText, options: options)
+		
+		return question
+	}
+	
+	func uniqueArrayOf(elementCount n: Int, lessThan threshold: Int) -> [Int]?{
+		
+		var result: [Int]?
+		
+		//impossible to return more unique integer elements than threshold
+		guard n <= threshold else {
+			
+			return nil
+		}
+		
+		result = []
+		
+		for _ in 0..<n {
+			
+			var element: Int
+			
+			repeat {
+				
+				element = random(lessThan: threshold)
+				
+			} while result!.contains(element)
+			
+			result!.append(element)
+		}
+		
+		return result
+	}
+	
+	func getOperationsIndexesTuple(lessThan upperBound: Int) -> (one: Int, two: Int) {
+		
+		let opOne = random(lessThan: upperBound)
+		
+		var opTwo: Int
+		
+		repeat {
+			
+			opTwo = random(lessThan: upperBound)
+			
+		} while opTwo == opOne
+		
+		return (opOne, opTwo)
+	}
+	
+	func applyOperationTo(a: Int, b: Int, opIndex: Int, operations: [String]) -> Int {
+		
+		var result: Int = a
+		
+		switch operations[opIndex] {
+			
+		case "+":
+			result += b
+		case "-":
+			result -= b
+		case "*":
+			result *= b
+		default:
+			return result
+			
+		}
+		
+		return result
+	}
+	
+	func getOptionResult(a: Int, b: Int, c: Int, opOne: Int, opTwo: Int, operations: [String]) -> Int {
+		
+		var result = self.applyOperationTo(a, b: b, opIndex: opOne, operations: operations)
+		
+		result = self.applyOperationTo(result, b: c, opIndex: opTwo, operations: operations)
+		
+		return result
+	}
+	
+	func random(lessThan upperBound: Int) -> Int {
+		
+		return GKRandomSource.sharedRandom().nextIntWithUpperBound(upperBound)
+	}
+	
+	func generateArithmeticQuestionsArrayOf(elements: Int) -> [Question]{
+		
+		var questions: [Question] = []
+		
+		for _ in 0..<elements {
+			
+			if let q = generateMathQuestion() {
+			
+				questions.append(q)
+			}
+		}
+		
+		return questions
+	}
+	
+	
+	func shuffledQuestions(trivaType: TriviaType) -> [Question]? {
+		
+		var triviaQuestions: [Question] = []
+		
+		switch trivaType {
+			case .textBased:
+				triviaQuestions += questions
+			
+			case .mixed:
+			
+				let mathQuestions = generateArithmeticQuestionsArrayOf(3)
+				triviaQuestions += (questions + mathQuestions)
+			
+			case .arithmetic:
+				
+				let mathQuestions = generateArithmeticQuestionsArrayOf(3)
+				triviaQuestions += mathQuestions
+		}
+		
+		guard let randomOrderedQuestions = GKRandomSource.sharedRandom().arrayByShufflingObjectsInArray(triviaQuestions) as? [Question] else {
 			
 			return nil
 		}

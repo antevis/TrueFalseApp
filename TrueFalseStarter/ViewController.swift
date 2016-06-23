@@ -40,6 +40,11 @@ class ViewController: UIViewController {
 	
 	let triviaModel = TriviaModel()
 	
+	var triviaType: TriviaModel.TriviaType? = TriviaModel.TriviaType.mixed
+	
+	var gameModes = ["Normal", "Lightning mode\r\r(15 sec. per answer)"]
+	var triviaTypes = ["Text-based", "Arithmetic", "Mixed"]
+	
 	var currentQuestionStatus: (qIndex: Int, answered: Bool) = (0, false)
 
     @IBOutlet weak var questionField: UILabel!
@@ -70,12 +75,29 @@ class ViewController: UIViewController {
 	
 	func requestGameMode() {
 		
+		questionField.text = "Please Select Game Mode:"
+		
 		removeButtonsFrom(buttonStack)
 		
-		addGameModeOptionButtonTo(stack: buttonStack, text: "Normal", tag: 0, color: questionButtonColor)
-		addGameModeOptionButtonTo(stack: buttonStack, text: "Lightning mode\r\r(15 sec. per answer)", tag: 1, color: lightningModeButtonColor)
+		for i in 0..<gameModes.count {
+			
+			addGameModeOptionButtonTo(stack: buttonStack, text: gameModes[i], tag: i, color: questionButtonColor)
+		}
 		
 		funcButton.hidden = true
+	}
+	
+	func requestTriviaType() {
+		
+		questionField.text = "Please Select Trivia Type:"
+		
+		removeButtonsFrom(buttonStack)
+		
+		for i in 0..<triviaTypes.count {
+			
+			addTriviaTypeOptionButton(stack: buttonStack, text: triviaTypes[i], tag: i, color: questionButtonColor)
+		}
+		
 	}
 
     override func didReceiveMemoryWarning() {
@@ -148,7 +170,12 @@ class ViewController: UIViewController {
 		loadGameStartSound()
 		playSound()
 		
-		questions = triviaModel.shuffledQuestions()
+		guard let triviaType = triviaType else {
+			
+			return
+		}
+		
+		questions = triviaModel.shuffledQuestions(triviaType)
 		
 		questionIndex = 0
 		correctAnswers = 0
@@ -251,11 +278,14 @@ class ViewController: UIViewController {
 	}
 	
 	
+	//This terribly violates DRY, but still can't figure out how to pass action as a parameter.
 	func addAnswerOptionButtonTo(stack stackView: UIStackView, text: String, tag: Int, color: ColorComponents) {
 		
 		let button = UIButton()
 		button.backgroundColor = color.color()
 		button.setTitle(text, forState: .Normal)
+		button.titleLabel?.textAlignment = .Center
+		button.titleLabel?.lineBreakMode = .ByWordWrapping
 		button.addTarget(self, action: #selector(answersButtonAction), forControlEvents: .TouchUpInside)
 		
 		button.tag = tag
@@ -271,6 +301,20 @@ class ViewController: UIViewController {
 		button.titleLabel?.textAlignment = .Center
 		button.titleLabel?.lineBreakMode = .ByWordWrapping
 		button.addTarget(self, action: #selector(gameModeButtonAction), forControlEvents: .TouchUpInside)
+		
+		button.tag = tag
+		
+		stackView.addArrangedSubview(button)
+	}
+	
+	func addTriviaTypeOptionButton(stack stackView: UIStackView, text: String, tag: Int, color: ColorComponents) {
+		
+		let button = UIButton()
+		button.backgroundColor = color.color()
+		button.setTitle(text, forState: .Normal)
+		button.titleLabel?.textAlignment = .Center
+		button.titleLabel?.lineBreakMode = .ByWordWrapping
+		button.addTarget(self, action: #selector(triviaTypeButtonAction), forControlEvents: .TouchUpInside)
 		
 		button.tag = tag
 		
@@ -332,8 +376,17 @@ class ViewController: UIViewController {
 			view.backgroundColor = normalBGColor.color()
 		}
 		
+		requestTriviaType()
+	}
+	
+	func triviaTypeButtonAction(sender: UIButton!) {
+		
+		triviaType = TriviaModel.TriviaType(rawValue: sender.tag)
+		
 		nextRound()
 	}
+	
+	
 	
 	func answersButtonAction(sender: UIButton!) {
 		
