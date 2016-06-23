@@ -40,8 +40,6 @@ class ViewController: UIViewController {
 	
 	let triviaModel = TriviaModel()
 	
-	var triviaType: TriviaModel.TriviaType? = TriviaModel.TriviaType.mixed
-	
 	var gameModes = ["Normal", "Lightning mode\r\r(15 sec. per answer)"]
 	var triviaTypes = ["Text-based", "Arithmetic", "Mixed"]
 	
@@ -165,15 +163,10 @@ class ViewController: UIViewController {
 	}
 	
 	
-    func nextRound() {
+	func nextRound(triviaType: TriviaModel.TriviaType) {
 		
 		loadGameStartSound()
 		playSound()
-		
-		guard let triviaType = triviaType else {
-			
-			return
-		}
 		
 		questions = triviaModel.shuffledQuestions(triviaType)
 		
@@ -229,6 +222,7 @@ class ViewController: UIViewController {
 		dispatch_after(dispatchTime, dispatch_get_main_queue()) {
 			//self.nextRound()
 			
+			//Lightning mode, still on the same question and it hasn't been answered
 			if self.lightningMode && (qIndexBeforeDelay == self.currentQuestionStatus.qIndex && !self.currentQuestionStatus.answered) {
 	
 				self.processFuncButtonAction()
@@ -242,35 +236,12 @@ class ViewController: UIViewController {
 		return NSURL(fileURLWithPath: pathToSoundFile!)
 	}
     
-    func loadGameStartSound() {
-		
-		AudioServicesCreateSystemSoundID(soundUrlFor(file: "GameSound", ofType: "wav"), &gameSound)
-    }
-	
-	func loadCorrectSound() {
-		
-		AudioServicesCreateSystemSoundID(soundUrlFor(file: "CorrectSound", ofType: "wav"), &gameSound)
-	}
-	
-	func loadWrongSound() {
-		
-		AudioServicesCreateSystemSoundID(soundUrlFor(file: "WrongSound", ofType: "wav"), &gameSound)
-	}
-	
-	func loadGameOverSound() {
-		
-		AudioServicesCreateSystemSoundID(soundUrlFor(file: "GameOverSound", ofType: "wav"), &gameSound)
-	}
-	
-	func loadErrorSound() {
-		
-		AudioServicesCreateSystemSoundID(soundUrlFor(file: "ErrorSound", ofType: "wav"), &gameSound)
-	}
-	
-	func loadNextQuestionSound() {
-		
-		AudioServicesCreateSystemSoundID(soundUrlFor(file: "NextQ", ofType: "wav"), &gameSound)
-	}
+    func loadGameStartSound() { AudioServicesCreateSystemSoundID(soundUrlFor(file: "GameSound", ofType: "wav"), &gameSound) }
+	func loadCorrectSound() { AudioServicesCreateSystemSoundID(soundUrlFor(file: "CorrectSound", ofType: "wav"), &gameSound) }
+	func loadWrongSound() { AudioServicesCreateSystemSoundID(soundUrlFor(file: "WrongSound", ofType: "wav"), &gameSound)}
+	func loadGameOverSound() { AudioServicesCreateSystemSoundID(soundUrlFor(file: "GameOverSound", ofType: "wav"), &gameSound)}
+	func loadErrorSound() { AudioServicesCreateSystemSoundID(soundUrlFor(file: "ErrorSound", ofType: "wav"), &gameSound)}
+	func loadNextQuestionSound() { AudioServicesCreateSystemSoundID(soundUrlFor(file: "NextQ", ofType: "wav"), &gameSound)}
 	
 	func playSound(){
 		
@@ -361,11 +332,26 @@ class ViewController: UIViewController {
 		label.textColor = textColor.color()
 	}
 	
+	
+	
+	func triviaTypeButtonAction(sender: UIButton!) {
+		
+		if let triviaType = TriviaModel.TriviaType(rawValue: sender.tag) {
+			
+			nextRound(triviaType)
+			
+		} else {
+		
+			nextRound(TriviaModel.TriviaType.mixed)
+		}
+		
+		funcButton.hidden = false
+	}
+	
 	func gameModeButtonAction(sender: UIButton!) {
 		
 		lightningMode = (sender.tag == 1)
 		
-		funcButton.hidden = false
 		
 		if lightningMode {
 			
@@ -378,15 +364,6 @@ class ViewController: UIViewController {
 		
 		requestTriviaType()
 	}
-	
-	func triviaTypeButtonAction(sender: UIButton!) {
-		
-		triviaType = TriviaModel.TriviaType(rawValue: sender.tag)
-		
-		nextRound()
-	}
-	
-	
 	
 	func answersButtonAction(sender: UIButton!) {
 		

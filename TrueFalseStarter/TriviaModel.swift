@@ -8,7 +8,7 @@
 
 import GameKit
 
-//Both question and options as classes in order to be able to use it as a parameter in
+//Both question and options implemented as classes in order to be able to use it as a parameter in
 //func arrayByShufflingObjectsInArray(_ array: [AnyObject]) -> [AnyObject], as structs aren't covertible to AnyObject
 class Question {
 	
@@ -177,9 +177,10 @@ struct TriviaModel {
 	
 	func generateMathQuestion() -> Question? {
 		
+		//avoided "/" for simplicity
 		let operations = ["+", "-", "*"]
 		
-		var operIndices = getOperationsIndexesTuple(lessThan: operations.count)
+		var operIndices = getRandomUniqueOperationsIndexesTuple(lessThan: operations.count)
 		
 		//to ensure unique expression members
 		guard let expressionMembers = uniqueArrayOf(elementCount: 3, lessThan: 10) else {
@@ -200,6 +201,7 @@ struct TriviaModel {
 		let correctOption = Option(text: "\(correctOptionValue)", correct: true)
 		options.append(correctOption)
 		
+		//used to ensure unique wrong options
 		var optionValues: [Int] = [correctOptionValue]
 		
 		for _ in 0..<3 {
@@ -211,13 +213,13 @@ struct TriviaModel {
 			
 			repeat {
 				
-				operIndices = getOperationsIndexesTuple(lessThan: operations.count)
+				operIndices = getRandomUniqueOperationsIndexesTuple(lessThan: operations.count)
 				
 				optionValue = self.getOptionResult(a, b: b, c: c, opOne: operIndices.one, opTwo: operIndices.two, operations: operations)
 				
 				guardian += 1
 				
-			} while optionValues.contains(optionValue) && guardian < 10
+			} while optionValues.contains(optionValue) || guardian < 10
 			
 			optionValues.append(optionValue)
 			
@@ -260,7 +262,7 @@ struct TriviaModel {
 		return result
 	}
 	
-	func getOperationsIndexesTuple(lessThan upperBound: Int) -> (one: Int, two: Int) {
+	func getRandomUniqueOperationsIndexesTuple(lessThan upperBound: Int) -> (one: Int, two: Int) {
 		
 		let opOne = random(lessThan: upperBound)
 		
@@ -281,14 +283,14 @@ struct TriviaModel {
 		
 		switch operations[opIndex] {
 			
-		case "+":
-			result += b
-		case "-":
-			result -= b
-		case "*":
-			result *= b
-		default:
-			return result
+			case "+":
+				result += b
+			case "-":
+				result -= b
+			case "*":
+				result *= b
+			default:
+				return result
 			
 		}
 		
@@ -335,12 +337,12 @@ struct TriviaModel {
 			
 			case .mixed:
 			
-				let mathQuestions = generateArithmeticQuestionsArrayOf(3)
+				let mathQuestions = generateArithmeticQuestionsArrayOf(questions.count)
 				triviaQuestions += (questions + mathQuestions)
 			
 			case .arithmetic:
 				
-				let mathQuestions = generateArithmeticQuestionsArrayOf(3)
+				let mathQuestions = generateArithmeticQuestionsArrayOf(questions.count)
 				triviaQuestions += mathQuestions
 		}
 		
