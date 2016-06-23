@@ -25,6 +25,8 @@ enum ColorComponents {
 	}
 }
 
+
+
 class ViewController: UIViewController {
 
 	var correctAnswers: Int = 0

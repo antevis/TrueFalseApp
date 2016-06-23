@@ -8,6 +8,8 @@
 
 import GameKit
 
+
+
 //Both question and options implemented as classes in order to be able to use it as a parameter in
 //func arrayByShufflingObjectsInArray(_ array: [AnyObject]) -> [AnyObject], as structs aren't covertible to AnyObject
 class Question {
