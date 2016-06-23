@@ -26,7 +26,7 @@
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                 <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                <state key="normal" title="Next Q"/>
+                                <state key="normal" title="Next Question"/>
                                 <connections>
                                     <action selector="processFuncButtonAction" destination="BYZ-38-t0r" eventType="touchUpInside" id="sHQ-ia-hAl"/>
                                 </connections>

@@ -51,11 +51,13 @@ class ViewController: UIViewController {
 	let dimmedQButtonColor = ColorComponents.RGB(red: 11, green: 47, blue: 66, alpha: 1)
 	let dimmedQButtonTitleColor = ColorComponents.RGB(red: 55, green: 77, blue: 90, alpha: 1)
 	let lightningModeButtonColor = ColorComponents.RGB(red: 255, green: 128, blue: 0, alpha: 1)
+	let lightnintModeBGColor = ColorComponents.RGB(red: 128, green: 0, blue: 0, alpha: 1)
 	let correctColor = ColorComponents.RGB(red: 90, green: 187, blue: 181, alpha: 1)
 	let wrongAnswerLabelColor = ColorComponents.RGB(red: 254, green: 147, blue: 81, alpha: 1)
 	let dimmedFuncButtonColor = ColorComponents.RGB(red: 10, green: 81, blue: 72, alpha: 1)
 	let dimmedFuncButtonTitleColor = ColorComponents.RGB(red: 170, green: 170, blue: 170, alpha: 1)
 	let white = ColorComponents.RGB(red: 255, green: 255, blue: 255, alpha: 1)
+	let normalBGColor = ColorComponents.RGB(red: 10, green: 32, blue: 47, alpha: 1)
 	
 	
     override func viewDidLoad() {
@@ -63,8 +65,18 @@ class ViewController: UIViewController {
 		
 		infoLabel.text = ""
 		
-		nextRound()
+		requestGameMode()
     }
+	
+	func requestGameMode() {
+		
+		removeButtonsFrom(buttonStack)
+		
+		addGameModeOptionButtonTo(stack: buttonStack, text: "Normal", tag: 0, color: questionButtonColor)
+		addGameModeOptionButtonTo(stack: buttonStack, text: "Lightning mode\r\r(15 sec. per answer)", tag: 1, color: lightningModeButtonColor)
+		
+		funcButton.hidden = true
+	}
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -169,7 +181,7 @@ class ViewController: UIViewController {
 			} else {
 			
 				//Play again
-				nextRound()
+				requestGameMode()
 			}
 		}
 	}
@@ -251,6 +263,20 @@ class ViewController: UIViewController {
 		stackView.addArrangedSubview(button)
 	}
 	
+	func addGameModeOptionButtonTo(stack stackView: UIStackView, text: String, tag: Int, color: ColorComponents) {
+		
+		let button = UIButton()
+		button.backgroundColor = color.color()
+		button.setTitle(text, forState: .Normal)
+		button.titleLabel?.textAlignment = .Center
+		button.titleLabel?.lineBreakMode = .ByWordWrapping
+		button.addTarget(self, action: #selector(gameModeButtonAction), forControlEvents: .TouchUpInside)
+		
+		button.tag = tag
+		
+		stackView.addArrangedSubview(button)
+	}
+	
 
 	func  removeButtonsFrom(superView: UIView) {
 		
@@ -289,6 +315,24 @@ class ViewController: UIViewController {
 		
 		label.text = text
 		label.textColor = textColor.color()
+	}
+	
+	func gameModeButtonAction(sender: UIButton!) {
+		
+		lightningMode = (sender.tag == 1)
+		
+		funcButton.hidden = false
+		
+		if lightningMode {
+			
+			view.backgroundColor = lightnintModeBGColor.color()
+			
+		} else {
+			
+			view.backgroundColor = normalBGColor.color()
+		}
+		
+		nextRound()
 	}
 	
 	func answersButtonAction(sender: UIButton!) {
@@ -334,7 +378,6 @@ class ViewController: UIViewController {
 		repaintButtonsExcept(buttonStack, pickedTag: sender.tag)
 		
 		setParamsFor(button: funcButton, color: correctColor, titleColor: white, enabled: true)
-		
 	}
 }
 
