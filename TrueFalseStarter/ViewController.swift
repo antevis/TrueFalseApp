@@ -41,8 +41,7 @@ class ViewController: UIViewController {
 	let triviaModel = TriviaModel()
 	
 	var currentQuestionStatus: (qIndex: Int, answered: Bool) = (0, false)
-	
-	
+
     @IBOutlet weak var questionField: UILabel!
 	@IBOutlet weak var infoLabel: UILabel!
 	@IBOutlet weak var funcButton: UIButton!
@@ -56,7 +55,7 @@ class ViewController: UIViewController {
 	let wrongAnswerLabelColor = ColorComponents.RGB(red: 254, green: 147, blue: 81, alpha: 1)
 	let dimmedFuncButtonColor = ColorComponents.RGB(red: 10, green: 81, blue: 72, alpha: 1)
 	let dimmedFuncButtonTitleColor = ColorComponents.RGB(red: 170, green: 170, blue: 170, alpha: 1)
-	let whiteColor = ColorComponents.RGB(red: 255, green: 255, blue: 255, alpha: 1)
+	let white = ColorComponents.RGB(red: 255, green: 255, blue: 255, alpha: 1)
 	
 	
     override func viewDidLoad() {
@@ -128,7 +127,7 @@ class ViewController: UIViewController {
 		
 		funcButton.setTitle("Play Again", forState: .Normal)
 		
-		setParamsFor(button: funcButton, color: correctColor, titleColor: whiteColor, enabled: true)
+		setParamsFor(button: funcButton, color: correctColor, titleColor: white, enabled: true)
 	}
 	
 	
@@ -149,6 +148,7 @@ class ViewController: UIViewController {
     
 	
 	@IBAction func processFuncButtonAction() {
+		
 		
 		loadNextQuestionSound()
 		playSound()
@@ -195,7 +195,6 @@ class ViewController: UIViewController {
 				self.processFuncButtonAction()
 			}
 		}
-		
     }
 	
 	func soundUrlFor(file fileName: String, ofType: String) -> NSURL {
@@ -334,7 +333,8 @@ class ViewController: UIViewController {
 		
 		repaintButtonsExcept(buttonStack, pickedTag: sender.tag)
 		
-		setParamsFor(button: funcButton, color: correctColor, titleColor: .RGB(red: 255, green: 255, blue: 255, alpha: 1), enabled: true)
+		setParamsFor(button: funcButton, color: correctColor, titleColor: white, enabled: true)
+		
 	}
 }
 
