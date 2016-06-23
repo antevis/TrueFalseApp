@@ -15,7 +15,8 @@ class Question {
 	let question: String
 	var options: [Option]?
 	
-	//There may be more than one correct option
+	//Optional array for cases where there are more than one correct option, as well as when there are no correct options at all
+	//used for buttons repainting after user's response
 	var correctOptionIndices: [Int]? {
 		
 		var indices: [Int]?
@@ -52,6 +53,7 @@ class Question {
 		self.options = options
 	}
 	
+	//Shuffles options within question. Used in questions array creation
 	func shuffledOptions() -> [Option]? {
 		
 		guard let options = options, let randomOrderedOptions = GKRandomSource.sharedRandom().arrayByShufflingObjectsInArray(options) as? [Option]  else {
@@ -62,6 +64,7 @@ class Question {
 		return randomOrderedOptions
 	}
 	
+	//used for the evaluation of user's response
 	func isCorrectOption(optionIndex: Int) -> Bool? {
 		
 		guard let options = self.options else {
@@ -94,6 +97,8 @@ class Question {
 class Option {
 	
 	let optionText: String
+	
+	//It is probably an overhead to make this optional. Though it emulates a three-state condition, which might be useful
 	let correct: Bool?
 	
 	init(text: String, correct: Bool?) {
@@ -105,6 +110,7 @@ class Option {
 
 struct TriviaModel {
 	
+	//Raw value used for button tags and array indexes
 	internal enum TriviaType: Int {
 		
 		case textBased
@@ -120,21 +126,21 @@ struct TriviaModel {
 //			Option(text: "Woodrow Wilson", correct: nil),
 			Option(text: "Andrew Jackson", correct: nil)]),
 		
-//		Question(question: "Which of the following countries has the most residents?", options: [
-//			Option(text: "Nigeria", correct: true),
-//			Option(text: "Russia", correct: nil),
+		Question(question: "Which of the following countries has the most residents?", options: [
+			Option(text: "Nigeria", correct: true),
+			Option(text: "Russia", correct: nil),
 //			Option(text: "Iran", correct: nil),
-//			Option(text: "Vietnam", correct: nil)]),
-//		
-//		Question(question: "In what year was the United Nations founded?", options: [
-//			Option(text: "1918", correct: nil),
-//			Option(text: "1919", correct: nil),
-//			Option(text: "1945", correct: true),
-//			Option(text: "1954", correct: nil)]),
+			Option(text: "Vietnam", correct: nil)]),
+		
+		Question(question: "In what year was the United Nations founded?", options: [
+			Option(text: "1918", correct: nil),
+			Option(text: "1919", correct: nil),
+			Option(text: "1945", correct: true),
+			Option(text: "1954", correct: nil)]),
 		
 		Question(question: "The Titanic departed from the United Kingdom, where was it supposed to arrive?", options: [
 			Option(text: "Paris", correct: nil),
-//			Option(text: "Washington D.C.", correct: nil),
+			Option(text: "Washington D.C.", correct: nil),
 			Option(text: "New York", correct: true),
 			Option(text: "Boston", correct: nil)]),
 		
@@ -145,28 +151,28 @@ struct TriviaModel {
 			Option(text: "Canada", correct: true)]),
 		
 		Question(question: "Which country has most recently won consecutive World Cups in Soccer?", options: [
-//			Option(text: "Italy", correct: nil),
+			Option(text: "Italy", correct: nil),
 			Option(text: "Brazil", correct: true),
 			Option(text: "Argentina", correct: nil),
 			Option(text: "Spain", correct: nil)]),
 		
-//		Question(question: "Which of the following rivers is longest?", options: [
+		Question(question: "Which of the following rivers is longest?", options: [
 //			Option(text: "Yangtze", correct: nil),
-//			Option(text: "Mississippi", correct: true),
+			Option(text: "Mississippi", correct: true),
 //			Option(text: "Congo", correct: nil),
-//			Option(text: "Mekong", correct: nil)]),
-//		
-//		Question(question: "Which city is the oldest?", options: [
-//			Option(text: "Mexico City", correct: true),
-//			Option(text: "Cape Town", correct: nil),
-//			Option(text: "San Juan", correct: nil),
-//			Option(text: "Sydney", correct: nil)]),
-//		
-//		Question(question: "Which country was the first to allow women to vote in national elections?", options: [
-//			Option(text: "Poland", correct: true),
-//			Option(text: "United States", correct: nil),
+			Option(text: "Mekong", correct: nil)]),
+		
+		Question(question: "Which city is the oldest?", options: [
+			Option(text: "Mexico City", correct: true),
+			Option(text: "Cape Town", correct: nil),
+			Option(text: "San Juan", correct: nil),
+			Option(text: "Sydney", correct: nil)]),
+		
+		Question(question: "Which country was the first to allow women to vote in national elections?", options: [
+			Option(text: "Poland", correct: true),
+			Option(text: "United States", correct: nil),
 //			Option(text: "Sweden", correct: nil),
-//			Option(text: "Senegal", correct: nil)]),
+			Option(text: "Senegal", correct: nil)]),
 		
 		Question(question: "Which of these countries won the most medals in the 2012 Summer Games?", options: [
 			Option(text: "France", correct: nil),
@@ -180,7 +186,7 @@ struct TriviaModel {
 		//avoided "/" for simplicity
 		let operations = ["+", "-", "*"]
 		
-		var operIndices = getRandomUniqueOperationsIndexesTuple(lessThan: operations.count)
+		var operIndices = getRandomUniqueOperationsIndexes(lessThan: operations.count)
 		
 		//to ensure unique expression members
 		guard let expressionMembers = uniqueArrayOf(elementCount: 3, lessThan: 10) else {
@@ -213,7 +219,7 @@ struct TriviaModel {
 			
 			repeat {
 				
-				operIndices = getRandomUniqueOperationsIndexesTuple(lessThan: operations.count)
+				operIndices = getRandomUniqueOperationsIndexes(lessThan: operations.count)
 				
 				optionValue = self.getOptionResult(a, b: b, c: c, opOne: operIndices.one, opTwo: operIndices.two, operations: operations)
 				
@@ -262,7 +268,8 @@ struct TriviaModel {
 		return result
 	}
 	
-	func getRandomUniqueOperationsIndexesTuple(lessThan upperBound: Int) -> (one: Int, two: Int) {
+	//get arbitrary two arithmetical operations array indexes out of a number of possible operations
+	func getRandomUniqueOperationsIndexes(lessThan upperBound: Int) -> (one: Int, two: Int) {
 		
 		let opOne = random(lessThan: upperBound)
 		
@@ -337,8 +344,14 @@ struct TriviaModel {
 			
 			case .mixed:
 			
-				let mathQuestions = generateArithmeticQuestionsArrayOf(questions.count)
-				triviaQuestions += (questions + mathQuestions)
+				let mathQuestions = generateArithmeticQuestionsArrayOf(questions.count / 2)
+				
+				//to ensure mixed collection to not exceed initial questions collection
+				for i in 0..<(questions.count - mathQuestions.count) {
+					
+					triviaQuestions.append(questions[i])
+				}
+				triviaQuestions += mathQuestions
 			
 			case .arithmetic:
 				
@@ -346,11 +359,13 @@ struct TriviaModel {
 				triviaQuestions += mathQuestions
 		}
 		
+		//Shuffle questions
 		guard let randomOrderedQuestions = GKRandomSource.sharedRandom().arrayByShufflingObjectsInArray(triviaQuestions) as? [Question] else {
 			
 			return nil
 		}
 		
+		//Shuffle options within each question
 		for question in randomOrderedQuestions {
 			
 			question.options = question.shuffledOptions()

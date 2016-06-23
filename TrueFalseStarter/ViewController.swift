@@ -43,6 +43,7 @@ class ViewController: UIViewController {
 	var gameModes = ["Normal", "Lightning mode\r\r(15 sec. per answer)"]
 	var triviaTypes = ["Text-based", "Arithmetic", "Mixed"]
 	
+	//used in lightning mode to track the question being clocked
 	var currentQuestionStatus: (qIndex: Int, answered: Bool) = (0, false)
 
     @IBOutlet weak var questionField: UILabel!
@@ -117,7 +118,7 @@ class ViewController: UIViewController {
 				
 				questionField.text = questionItem.question
 				
-				processLabel(infoLabel, text: "", textColor: ColorComponents.RGB(red: 18, green: 101, blue: 132, alpha: 1))
+				processLabel(infoLabel, text: "", textColor: questionButtonColor)
 				
 				if let options = questionItem.options {
 					
@@ -129,9 +130,10 @@ class ViewController: UIViewController {
 				
 				currentQuestionStatus = (questionIndex, false)
 				
+				//if in lightning mode, start clocking
 				if lightningMode {
 					
-					loadNextRoundWithDelay(seconds: 5)
+					loadNextRoundWithDelay(seconds: 7)
 				}
 			}
 		}
@@ -145,8 +147,6 @@ class ViewController: UIViewController {
 	}
 	
 	func displayGameOver(questionsCount: Int) {
-		
-		print("Game over")
 		
 		var messageText = ""
 		
@@ -181,7 +181,6 @@ class ViewController: UIViewController {
 	
 	@IBAction func processFuncButtonAction() {
 		
-		
 		loadNextQuestionSound()
 		playSound()
 		
@@ -193,11 +192,14 @@ class ViewController: UIViewController {
 			if questionIndex < questions.count {
 				
 				displayQuestion(questionIndex)
-				
+			
+			//funcButton touches are actually being tracked by questionIndex variable that is being incremented with each touch.
+			//Here it is icremented beyond questions array capacity by 1 -> all questions has been asked, meaning game over.
 			} else if questionIndex == questions.count {
 				
 				displayGameOver(questions.count)
-				
+			
+			//incremented even further -> next game
 			} else {
 			
 				//Play again
@@ -211,6 +213,7 @@ class ViewController: UIViewController {
     
     func loadNextRoundWithDelay(seconds seconds: Int) {
 		
+		//to ensure that we are dealing with the same question and it hasn't been answered during the delay
 		let qIndexBeforeDelay = currentQuestionStatus.qIndex
 			
 		// Converts a delay in seconds to nanoseconds as signed 64 bit integer
@@ -220,7 +223,6 @@ class ViewController: UIViewController {
 		
 		// Executes the nextRound method at the dispatch time on the main queue
 		dispatch_after(dispatchTime, dispatch_get_main_queue()) {
-			//self.nextRound()
 			
 			//Lightning mode, still on the same question and it hasn't been answered
 			if self.lightningMode && (qIndexBeforeDelay == self.currentQuestionStatus.qIndex && !self.currentQuestionStatus.answered) {
@@ -249,7 +251,7 @@ class ViewController: UIViewController {
 	}
 	
 	
-	//This terribly violates DRY, but still can't figure out how to pass action as a parameter.
+	//This terribly violates DRY, but still can't figure out how to pass the action as a parameter.
 	func addAnswerOptionButtonTo(stack stackView: UIStackView, text: String, tag: Int, color: ColorComponents) {
 		
 		let button = UIButton()
@@ -303,25 +305,43 @@ class ViewController: UIViewController {
 			}
 		}
 	}
+
 	
-	func repaintButtonsExcept(superView: UIView, pickedTag: Int) {
+	func repaintButtons(superView: UIView, pickedTag: Int, correctIndices: [Int]?) {
 		
 		for subView in superView.subviews {
 			
 			if let button = subView as? UIButton {
-			
-				button.backgroundColor = dimmedQButtonColor.color()
 				
-				if button.tag != pickedTag {
+				//common tasks for all buttons
+				button.backgroundColor = dimmedQButtonColor.color()
+				button.enabled = false
+				
+				let isPicked = (pickedTag == button.tag)
+				
+				//prefer to avoid force unwrapping, but still variable has to have a value. Sometimes it takes an ugly form
+				var isCorrect: Bool = false
+				
+				if let correctIndices = correctIndices {
 					
-					button.setTitleColor(dimmedQButtonTitleColor.color(), forState: .Normal)
-					
-				} else {
-
-					button.setTitleColor(.whiteColor(), forState: .Normal)
+					isCorrect = correctIndices.contains(button.tag)
 				}
 				
-				button.enabled = false
+				if isCorrect {
+					
+					button.setTitleColor(correctColor.color(), forState: .Normal)
+					
+				} else {
+					
+					if isPicked {
+						
+						button.setTitleColor(wrongAnswerLabelColor.color(), forState: .Normal)
+						
+					} else {
+						
+						button.setTitleColor(dimmedQButtonTitleColor.color(), forState: .Normal)
+					}
+				}
 			}
 		}
 	}
@@ -333,7 +353,7 @@ class ViewController: UIViewController {
 	}
 	
 	
-	
+	//Define triva type and start the game
 	func triviaTypeButtonAction(sender: UIButton!) {
 		
 		if let triviaType = TriviaModel.TriviaType(rawValue: sender.tag) {
@@ -348,6 +368,7 @@ class ViewController: UIViewController {
 		funcButton.hidden = false
 	}
 	
+	//define game mode (Normal / Lightning)
 	func gameModeButtonAction(sender: UIButton!) {
 		
 		lightningMode = (sender.tag == 1)
@@ -365,8 +386,10 @@ class ViewController: UIViewController {
 		requestTriviaType()
 	}
 	
+	
 	func answersButtonAction(sender: UIButton!) {
 		
+		//prevents lightning mode logic to ask next question. In case of answer, next question is being asked with funcButton touch
 		currentQuestionStatus.answered = true
 		
 		if let questionItem = questionItem  {
@@ -390,6 +413,9 @@ class ViewController: UIViewController {
 					processLabel(infoLabel, text: "Sorry, that's not it.", textColor: wrongAnswerLabelColor)
 				}
 				
+				repaintButtons(buttonStack, pickedTag: sender.tag, correctIndices: questionItem.correctOptionIndices)
+			
+			//unlikely, but still
 			} else {
 				
 				loadErrorSound()
@@ -397,6 +423,8 @@ class ViewController: UIViewController {
 				
 				processLabel(infoLabel, text: "Unable to evaluate your answer. o_O", textColor: wrongAnswerLabelColor)
 			}
+		
+		//Even more unlikely, but still.
 		} else {
 			
 			loadErrorSound()
@@ -405,8 +433,7 @@ class ViewController: UIViewController {
 			processLabel(infoLabel, text: "Unable to determine the question you've answered. o_O", textColor: wrongAnswerLabelColor)
 		}
 		
-		repaintButtonsExcept(buttonStack, pickedTag: sender.tag)
-		
+		//Enables funcButton after user's reply
 		setParamsFor(button: funcButton, color: correctColor, titleColor: white, enabled: true)
 	}
 }
